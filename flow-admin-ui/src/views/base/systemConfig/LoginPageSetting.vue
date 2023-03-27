@@ -9,7 +9,7 @@
         </template>
         <a-col :span="13">
           <div class="mb-2 mt-4">登录页面标题</div>
-          <a-input />
+          <a-input v-model:value="signInTitle"/>
         </a-col>
       </Popover>
 
@@ -21,7 +21,7 @@
         </template>
         <a-col :span="13">
           <div class="mb-2 mt-4">登录页面副标题</div>
-          <a-input />
+          <a-input v-model:value="signInDesc"/>
         </a-col>
       </Popover>
 
@@ -84,16 +84,13 @@
 </template>
 <script lang="ts">
 import { Button, Row, Col, Upload, Popover } from 'ant-design-vue';
-import { computed, ref, defineComponent, onMounted } from 'vue';
+import {computed, ref, defineComponent, onMounted, watch} from 'vue';
 import { BasicForm, useForm } from '/@/components/Form/index';
 import { CollapseContainer } from '/@/components/Container';
 import { CropperAvatar } from '/@/components/Cropper';
 import { PlusOutlined, LoadingOutlined } from '@ant-design/icons-vue';
-
 import { useMessage } from '/@/hooks/web/useMessage';
-
 import headerImg from '/@/assets/images/header.jpg';
-import { accountInfoApi } from '/@/api/demo/account';
 import { baseSetschemas } from './data';
 import { useUserStore } from '/@/store/modules/user';
 import { uploadApi } from '/@/api/sys/upload';
@@ -107,71 +104,102 @@ export default defineComponent({
     ACol: Col,
     CropperAvatar,
   },
-  setup() {
+  props: {
+    configDataList: {
+      type: Array,
+    },
+  },
+  setup(props) {
     const { createMessage } = useMessage();
     const userStore = useUserStore();
     const appLogo = ref();
+    const systemConfigSettingList = ref();
+    const configSettingMap = {};
+    const signInTitle = ref();
+    const signInDesc = ref();
     const [register, { setFieldsValue }] = useForm({
       labelWidth: 120,
       schemas: baseSetschemas,
       showActionButtonGroup: false,
     });
 
-    onMounted(async () => {
-      const data = await accountInfoApi();
-      setFieldsValue(data);
-    });
+      onMounted(() => {
 
-    const avatar = computed(() => {
-      const { avatar } = userStore.getUserInfo;
-      return avatar || headerImg;
-    });
+      });
 
-    function updateAvatar(src: string) {
-      const userinfo = userStore.getUserInfo;
-      userinfo.avatar = src;
-      userStore.setUserInfo(userinfo);
-    }
-
-    // 解析为base64位
-    const getBase64 = (img, callback) => {
-      const reader = new FileReader();
-      reader.addEventListener('load', () => callback(reader.result));
-      // 读取文件
-      reader.readAsDataURL(img);
-    }
-
-    const beforeUpload = (file) => {
-      const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-      if (!isJpgOrPng) {
-        createMessage.error("只允许上传JPG图片！");
-        return false;
-      }
-      const isLt2M = file.size / 1024 / 1024 < 2;
-      if (!isLt2M) {
-        createMessage.error("图片不能大于2MB！");
-        return false;
-      }
-      getBase64(file, imgUrl => {
-          imageUrl.value = imgUrl;
+      function setConfigDataList(list) {
+        systemConfigSettingList.value = list;
+        if(list){
+          for (let item of list) {
+            configSettingMap[item.configKey] = item;
+          }
+          signInTitle.value = configSettingMap['signInTitle'].configValue;
+          signInDesc.value = configSettingMap['signInDesc'].configValue;
         }
-      );
-      return false;
-    }
+      }
 
-    return {
-      avatar,
-      register,
-      beforeUpload,
-      appLogo,
-      uploadApi: uploadApi as any,
-      updateAvatar,
-      handleSubmit: () => {
+      watch(
+        () => props.configDataList,
+        (list) => {
+          setConfigDataList(list);
+        },
+        { immediate: true },
+      );
+      const avatar = computed(() => {
+        const { avatar } = userStore.getUserInfo;
+        return avatar || headerImg;
+      });
+
+      function updateAvatar(src: string) {
+        const userinfo = userStore.getUserInfo;
+        userinfo.avatar = src;
+        userStore.setUserInfo(userinfo);
+      }
+
+      // 解析为base64位
+      const getBase64 = (img, callback) => {
+        const reader = new FileReader();
+        reader.addEventListener('load', () => callback(reader.result));
+        // 读取文件
+        reader.readAsDataURL(img);
+      }
+
+      const beforeUpload = (file) => {
+        const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+        if (!isJpgOrPng) {
+          createMessage.error("只允许上传JPG图片！");
+          return false;
+        }
+        const isLt2M = file.size / 1024 / 1024 < 2;
+        if (!isLt2M) {
+          createMessage.error("图片不能大于2MB！");
+          return false;
+        }
+        getBase64(file, imgUrl => {
+            imageUrl.value = imgUrl;
+          }
+        );
+        return false;
+      }
+
+      function handleSubmit() {
         createMessage.success('更新成功！');
-      },
-    };
-  },
-});
+      }
+
+      return {
+        avatar,
+        register,
+        beforeUpload,
+        appLogo,
+        uploadApi: uploadApi as any,
+        updateAvatar,
+        handleSubmit,
+        systemConfigSettingList,
+        signInTitle,
+        signInDesc,
+      };
+    },
+  });
 </script>
 
 <style lang="less">

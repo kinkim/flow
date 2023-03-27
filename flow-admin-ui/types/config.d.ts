@@ -60,12 +60,14 @@ export interface HeaderSetting {
 }
 
 export interface CustomSetting {
-  appIcon: string;
+  favicon: string;
   loginPageBg: string;
-  projectName: string;
-  projectLogo: string;
+  appName: string;
+  appLogo: string;
+  appLoadingLogo: string;
   signInDesc: string;
   signInTitle: string;
+  loginBoxBg: string;
 }
 
 export interface LocaleSetting {

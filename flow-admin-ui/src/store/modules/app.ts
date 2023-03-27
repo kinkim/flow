@@ -16,6 +16,7 @@ import { Persistent } from '/@/utils/cache/persistent';
 import { darkMode } from '/@/settings/designSetting';
 import { resetRouter } from '/@/router';
 import { deepMerge } from '/@/utils';
+import {getSystemSettings} from "/@/api/sys/user";
 
 interface AppState {
   darkMode?: ThemeEnum;
@@ -79,6 +80,18 @@ export const useAppStore = defineStore({
     },
 
     setProjectConfig(config: DeepPartial<ProjectConfig>): void {
+      console.log('================================');
+      /*getSystemSettings().then(res=>{
+        debugger;
+        // const customSetting = res;
+        // // appStore.setProjectConfig({customSetting});
+        // const appLoadingLogoEle = document.getElementsByClassName('app-loading-logo')[0];
+        // const appLoadingTitleEle = document.getElementsByClassName('app-loading-title')[0]
+        // debugger;
+        // appLoadingLogoEle.setAttribute("src", customSetting.appLogo);
+        // appLoadingTitleEle.innerHTML = customSetting.appName;
+      });*/
+
       this.projectConfig = deepMerge(this.projectConfig || {}, config);
       Persistent.setLocal(PROJ_CFG_KEY, this.projectConfig);
     },

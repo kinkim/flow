@@ -49,7 +49,7 @@ export function initAppConfigStore() {
     console.log(error);
   }
 
-  initCustomSetting();
+  // initCustomSetting();
   appStore.setProjectConfig(projCfg);
 
   // init dark mode
@@ -90,20 +90,13 @@ export function clearObsoleteStorage() {
 function initCustomSetting(){
   const appStore = useAppStore();
   getSystemSettings().then(res=>{
-    setTimeout(()=>{
+    const customSetting = res;
+    appStore.setProjectConfig({customSetting});
+    const appLoadingLogoEle = document.getElementsByClassName('app-loading-logo')[0];
+    const appLoadingTitleEle = document.getElementsByClassName('app-loading-title')[0]
+    debugger;
+    appLoadingLogoEle.setAttribute("src", customSetting.appLogo);
+    appLoadingTitleEle.innerHTML = customSetting.appName;
 
-      const customSetting = {
-        signInDesc: '开箱即用的中流程引擎',
-        signInTitle: '',
-        appIcon: '',
-        projectName: '',
-        projectLogo: ''
-      };
-
-      appStore.setProjectConfig({customSetting});
-      debugger;
-    }, 4000);
-
-    console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', res);
   });
 }

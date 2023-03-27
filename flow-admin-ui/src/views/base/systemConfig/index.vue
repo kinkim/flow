@@ -4,7 +4,7 @@
       <Tabs tab-position="left" :tabBarStyle="tabBarStyle">
         <template v-for="item in settingList" :key="item.key">
           <TabPane :tab="item.name">
-            <component :is="item.component" />
+            <component :is="item.component" :configDataList="settingDataList" />
           </TabPane>
         </template>
       </Tabs>
@@ -13,17 +13,13 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent } from 'vue';
+  import {defineComponent, onMounted, ref} from 'vue';
   import { Tabs } from 'ant-design-vue';
-
   import { ScrollContainer } from '/@/components/Container/index';
   import { settingList } from './data';
-
   import BaseSetting from './BaseSetting.vue';
-  import SecureSetting from './SecureSetting.vue';
-  import AccountBind from './AccountBind.vue';
-  import MsgNotify from './MsgNotify.vue';
   import LoginPageSetting from './LoginPageSetting.vue';
+  import {getAllSystemConfigSettings} from "/@/api/base/systemConfig";
 
   export default defineComponent({
     components: {
@@ -31,15 +27,22 @@
       Tabs,
       TabPane: Tabs.TabPane,
       BaseSetting,
-      SecureSetting,
-      AccountBind,
-      MsgNotify,
       LoginPageSetting,
     },
     setup() {
+      const settingDataList = ref();
+      onMounted(() => {
+        getAllSystemConfigSettings().then(res => {
+          if (res) {
+            settingDataList.value = res;
+          }
+        });
+      });
+
       return {
         prefixCls: 'account-setting',
         settingList,
+        settingDataList,
         tabBarStyle: {
           width: '220px',
         },

@@ -11,16 +11,65 @@ enum Api {
   GetPermissions = '/flow/main/getPermissions',
   GetSystemSettings = '/getSystemSettings',
 }
+function getConfigValue(item, type){
+  if(type === 'image'){
+    return item.image;
+  } else {
+    return item.configValue||null;
+  }
+}
 
-/**
- * 获取配置信息
- */
-export function getSystemSettings() {
+export function getSystemSettingsList() {
   return defHttp.get<LoginResultModel>(
     {
       url: Api.GetSystemSettings,
     }
   );
+}
+
+/**
+ * 获取配置信息
+ */
+export function getSystemSettings() {
+  return getSystemSettingsList().then(res => {
+    const customSetting = {
+      signInDesc: '开箱即用的中流程引擎',
+      signInTitle: '',
+      favicon: '',
+      appName: '',
+      appLogo: '',
+      loginBoxBg: '',
+    }
+    if(res){
+      debugger
+      for(let item of res){
+        console.log(item);
+        switch (item.configKey) {
+          case 'logo':
+            debugger
+            customSetting.appLogo = getConfigValue(item, 'image');
+            break;
+          case 'signInDesc':
+            customSetting.signInDesc = getConfigValue(item, 'value');
+            break;
+          case 'signInTitle':
+            customSetting.signInTitle = getConfigValue(item, 'value');
+            break;
+          case 'favicon':
+            customSetting.favicon = getConfigValue(item, 'image');
+            break;
+          case 'systemName':
+            customSetting.appName = getConfigValue(item, 'value');
+            break;
+          case 'loginBoxBg':
+            customSetting.loginBoxBg = getConfigValue(item, 'value');
+            break;
+        }
+      }
+    }
+
+    return Promise.resolve(customSetting);
+  });
 }
 
 /**

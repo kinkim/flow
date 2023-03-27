@@ -4,9 +4,9 @@
 -->
 <template>
   <div class="anticon" :class="getAppLogoClass" @click="goHome">
-    <img src="../../../assets/images/logo.png" />
+    <img :src="appLogo" />
     <div class="ml-2 truncate md:opacity-100" :class="getTitleClass" v-show="showTitle">
-      {{ title }}
+      {{ appName }}
     </div>
   </div>
 </template>
@@ -18,6 +18,7 @@
   import { useDesign } from '/@/hooks/web/useDesign';
   import { PageEnum } from '/@/enums/pageEnum';
   import { useUserStore } from '/@/store/modules/user';
+  import { useAppStore } from '/@/store/modules/app';
 
   const props = defineProps({
     /**
@@ -39,6 +40,8 @@
   const userStore = useUserStore();
   const { title } = useGlobSetting();
   const go = useGo();
+  const appStore = useAppStore();
+
 
   const getAppLogoClass = computed(() => [
     prefixCls,
@@ -56,6 +59,10 @@
   function goHome() {
     go(userStore.getUserInfo.homePath || PageEnum.BASE_HOME);
   }
+  const appLogo = computed(() => appStore?.projectConfig?.customSetting?.appLogo ?? '');
+  const appName = computed(() => appStore?.projectConfig?.customSetting?.appName ?? '');
+
+
 </script>
 <style lang="less" scoped>
   @prefix-cls: ~'@{namespace}-app-logo';

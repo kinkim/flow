@@ -37,5 +37,5 @@ public class SystemConfig extends BaseModel implements Serializable{
     // 备注
     private String remark;
     //图片
-    private byte[] image;
+    private String image;
 }

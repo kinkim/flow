@@ -27,7 +27,6 @@
   import { defineComponent } from 'vue';
   import { CollapseContainer } from '/@/components/Container/index';
   import Icon from '/@/components/Icon/index';
-
   import { accountBindList } from './data';
 
   export default defineComponent({

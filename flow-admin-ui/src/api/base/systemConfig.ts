@@ -4,6 +4,7 @@ import {SystemConfigInfo, SystemConfigParams, SystemConfigPageListGetResultModel
 
 enum Api {
   SystemConfigPageList = '/flow/base/systemConfig/getPagerModel',
+  GetAllSystemConfigSettings = '/flow/base/systemConfig/getAll',
   SaveOrUpdate = '/flow/base/systemConfig/saveOrUpdate',
   Delete = '/flow/base/systemConfig/delete',
   CheckEntityExist = '/flow/base/systemConfig/checkEntityExist',
@@ -18,7 +19,10 @@ export const getSystemConfigListByPage = (params?: SystemConfigParams) => {
   }
   const queryParam = {query, entity} as BasicPageSearchParams<SystemConfigPageParams>;
   return defHttp.post<SystemConfigPageListGetResultModel>({ url: Api.SystemConfigPageList, params: queryParam });
+};
 
+export const getAllSystemConfigSettings = () => {
+  return defHttp.get({ url: Api.GetAllSystemConfigSettings});
 };
 
 export const saveOrUpdate = (params?: SystemConfigInfo) =>

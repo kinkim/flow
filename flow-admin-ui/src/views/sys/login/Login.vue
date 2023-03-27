@@ -17,8 +17,8 @@
           <AppLogo class="-enter-x" />
           <div class="my-auto">
             <img
-              :alt="title"
-              src="../../../assets/svg/login-box-bg.svg"
+              :alt="appName"
+              :src="loginBoxBg"
               class="w-1/2 -mt-16 -enter-x"
             />
             <div class="mt-10 font-medium text-white -enter-x">
@@ -66,9 +66,9 @@
     },
   });
 
-  const {getProjectConfig: {customSetting}} = useAppStore();
+  const appStore = useAppStore();
 
-  console.log(customSetting, '+++++++++++++++++++++++');
+  // console.log(customSetting, '+++++++++++++++++++++++');
 
   const globSetting = useGlobSetting();
   const { prefixCls } = useDesign('login');
@@ -76,8 +76,11 @@
   const localeStore = useLocaleStore();
   const showLocale = localeStore.getShowPicker;
   const title = computed(() => globSetting?.title ?? '');
-  const signInDesc = computed(() => customSetting?.signInDesc ?? '');
-  const signInTitle = computed(() => customSetting?.signInTitle ?? '');
+
+  const signInDesc = computed(() => appStore?.projectConfig?.customSetting?.signInDesc ?? '');
+  const signInTitle = computed(() => appStore?.projectConfig?.customSetting?.signInTitle ?? '');
+  const appName = computed(() => appStore?.projectConfig?.customSetting?.appName ?? '');
+  const loginBoxBg = computed(() => appStore?.projectConfig?.customSetting?.loginBoxBg ?? '');
 
 </script>
 <style lang="less">
